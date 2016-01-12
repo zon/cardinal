@@ -391,7 +391,7 @@ namespace CardinalTests {
 			Assert.Equal(1, completed);
 		}
 
-		/* [Fact]
+		[Fact]
 		public void can_map_promise_value() {
 			var promise = new Promise<int>();
 
@@ -412,14 +412,14 @@ namespace CardinalTests {
 		}
 
 		[Fact]
-		public void rejection_of_source_promise_rejects_transformed_promise() {
+		public void rejection_of_source_promise_rejects_mapped_promise() {
 			var promise = new Promise<int>();
 
 			var ex = new Exception();
 			var errors = 0;
 
 			promise
-				.Transform(v => v.ToString())
+				.Map(v => v.ToString())
 				.Catch(e => {
 					Assert.Equal(ex, e);
 
@@ -440,7 +440,7 @@ namespace CardinalTests {
 			var ex = new Exception();
 
 			promise
-				.Transform<string>(v => {
+				.Map<string>(v => {
 					throw ex;
 				})
 				.Catch(e => {
@@ -478,26 +478,6 @@ namespace CardinalTests {
 		}
 
 		[Fact]
-		public void can_chain_promise_and_convert_to_non_value_promise() {
-			var promise = new Promise<int>();
-			var chainedPromise = new Promise();
-
-			var promisedValue = 15;
-			var completed = 0;
-
-			promise
-				.Then(v => chainedPromise)
-				.Then(() => {
-					++completed;
-				});
-
-			promise.Resolve(promisedValue);
-			chainedPromise.Resolve();
-
-			Assert.Equal(1, completed);
-		}
-
-		[Fact]
 		public void exception_thrown_in_chain_rejects_resulting_promise() {
 			var promise = new Promise<int>();
 			var chainedPromise = new Promise<string>();
@@ -506,7 +486,7 @@ namespace CardinalTests {
 			var errors = 0;
 
 			promise
-				.Then<IPromise<string>>(v => {
+				.Then<string>(v => {
 					throw ex;
 				})
 				.Catch(e => {
@@ -541,7 +521,7 @@ namespace CardinalTests {
 			Assert.Equal(1, errors);
 		}
 
-		[Fact]
+		/* [Fact]
 		public void race_is_resolved_when_first_promise_is_resolved_first() {
 			var promise1 = new Promise<int>();
 			var promise2 = new Promise<int>();

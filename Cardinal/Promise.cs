@@ -135,7 +135,7 @@ namespace Cardinal {
 			return promise;
 		}
 
-		public Promise<B> Map<B>(Func<A, B> onFulfilled) {
+		public Promise<B> Then<B>(Func<A, Promise<B>> onFulfilled) {
 			var promise = new Promise<B>();
 			resolutions += value => {
 				try {
@@ -149,7 +149,7 @@ namespace Cardinal {
 			return promise;
 		}
 
-		public Promise<B> Next<B>(Func<A, Promise<B>> onFulfilled) {
+		public Promise<B> Map<B>(Func<A, B> onFulfilled) {
 			var promise = new Promise<B>();
 			resolutions += value => {
 				try {
