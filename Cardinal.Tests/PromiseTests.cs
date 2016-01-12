@@ -201,7 +201,7 @@ namespace CardinalTests {
 			promise.Reject(new ApplicationException("Rejection!"));
 		}
 
-		/* [Fact]
+		[Fact]
 		public void chain_multiple_promises_using_all() {
 			var promise = new Promise<string>();
 			var chainedPromise1 = new Promise<int>();
@@ -211,13 +211,11 @@ namespace CardinalTests {
 
 			var completed = 0;
 
-			promise
-				.ThenAll(i => LinqExts.FromItems(chainedPromise1, chainedPromise2).Cast<IPromise<int>>())
-				.Then(result => {
-					var items = result.ToArray();
-					Assert.Equal(2, items.Length);
-					Assert.Equal(chainedResult1, items[0]);
-					Assert.Equal(chainedResult2, items[1]);
+			Promise.All(new Promise<int>[] { chainedPromise1, chainedPromise2 })
+				.Then(results => {
+					Assert.Equal(2, results.Length);
+					Assert.Equal(chainedResult1, results[0]);
+					Assert.Equal(chainedResult2, results[1]);
 
 					++completed;
 				});
@@ -238,7 +236,7 @@ namespace CardinalTests {
 		}
 
 
-		[Fact]
+		/* [Fact]
 		public void chain_multiple_promises_using_all_that_are_resolved_out_of_order() {
 			var promise = new Promise<string>();
 			var chainedPromise1 = new Promise<int>();

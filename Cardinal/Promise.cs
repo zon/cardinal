@@ -3,11 +3,36 @@ using System.Collections;
 
 namespace Cardinal {
 
+	public static class Promise {
+
+		public static Action<Exception> onException;
+
+		public static Promise<T[]> All<T>(Promise<T>[] promises) {
+			if (promises.Length < 1)
+				return new Promise<T[]>(new T[0]);
+			var result = new Promise<T[]>();
+			var values = new T[promises.Length];
+			var remaining = promises.Length;
+			for (var p = 0; p < promises.Length; p++) {
+				var i = p;
+				var promise = promises[p];
+				promise.Then(v => {
+					values[i] = v;
+					remaining--;
+					if (remaining < 1) {
+						result.Resolve(values);
+					}
+				});
+				promise.Catch(e => result.Reject(e));
+			}
+			return result;
+		}
+
+	}
+
 	public class Promise<A> {
 		Action<A> resolutions;
 		Action<Exception> rejections;
-
-		public static Action<Exception> onException;
 
 		public State state {
 			get;
@@ -137,8 +162,8 @@ namespace Cardinal {
 		}
 
 		public void Done() {
-			if (onException != null)
-				rejections += onException;
+			if (Promise.onException != null)
+				rejections += Promise.onException;
 			Resolve(true);
 		}
 
@@ -147,8 +172,8 @@ namespace Cardinal {
 				try {
 					onFulfilled(value);
 				} catch (Exception e) {
-					if (onException != null)
-						onException(e);
+					if (Promise.onException != null)
+						Promise.onException(e);
 				}
 			};
 			Done();
@@ -264,8 +289,8 @@ namespace Cardinal {
 			} else if (state == State.Rejected) {
 				if (rejections != null)
 					rejections(reason);
-				else if (done && onException != null)
-					onException(reason);
+				else if (done && Promise.onException != null)
+					Promise.onException(reason);
 			}
 			if (state != State.Pending) {
 				resolutions = null;
