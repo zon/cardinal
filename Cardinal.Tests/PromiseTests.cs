@@ -235,8 +235,7 @@ namespace CardinalTests {
 			Assert.Equal(1, completed);
 		}
 
-
-		/* [Fact]
+		[Fact]
 		public void chain_multiple_promises_using_all_that_are_resolved_out_of_order() {
 			var promise = new Promise<string>();
 			var chainedPromise1 = new Promise<int>();
@@ -246,13 +245,11 @@ namespace CardinalTests {
 
 			var completed = 0;
 
-			promise
-				.ThenAll(i => LinqExts.FromItems(chainedPromise1, chainedPromise2).Cast<IPromise<int>>())
-				.Then(result => {
-					var items = result.ToArray();
-					Assert.Equal(2, items.Length);
-					Assert.Equal(chainedResult1, items[0]);
-					Assert.Equal(chainedResult2, items[1]);
+			Promise.All(new Promise<int>[] { chainedPromise1, chainedPromise2 })
+				.Then(results => {
+					Assert.Equal(2, results.Length);
+					Assert.Equal(chainedResult1, results[0]);
+					Assert.Equal(chainedResult2, results[1]);
 
 					++completed;
 				});
@@ -273,50 +270,20 @@ namespace CardinalTests {
 		}
 
 		[Fact]
-		public void chain_multiple_promises_using_all_and_convert_to_non_value_promise() {
-			var promise = new Promise<string>();
-			var chainedPromise1 = new Promise();
-			var chainedPromise2 = new Promise();
-
-			var completed = 0;
-
-			promise
-				.ThenAll(i => LinqExts.FromItems(chainedPromise1, chainedPromise2).Cast<IPromise>())
-				.Then(() => {
-					++completed;
-				});
-
-			Assert.Equal(0, completed);
-
-			promise.Resolve("hello");
-
-			Assert.Equal(0, completed);
-
-			chainedPromise1.Resolve();
-
-			Assert.Equal(0, completed);
-
-			chainedPromise2.Resolve();
-
-			Assert.Equal(1, completed);
-		}
-
-		[Fact]
 		public void combined_promise_is_resolved_when_children_are_resolved() {
 			var promise1 = new Promise<int>();
 			var promise2 = new Promise<int>();
 
-			var all = Promise<int>.All(LinqExts.FromItems<IPromise<int>>(promise1, promise2));
+			var all = Promise.All(new Promise<int>[] { promise1, promise2 });
 
 			var completed = 0;
 
-			all.Then(v => {
+			all.Then(results => {
 				++completed;
-
-				var values = v.ToArray();
-				Assert.Equal(2, values.Length);
-				Assert.Equal(1, values[0]);
-				Assert.Equal(2, values[1]);
+				
+				Assert.Equal(2, results.Length);
+				Assert.Equal(1, results[0]);
+				Assert.Equal(2, results[1]);
 			});
 
 			promise1.Resolve(1);
@@ -330,7 +297,7 @@ namespace CardinalTests {
 			var promise1 = new Promise<int>();
 			var promise2 = new Promise<int>();
 
-			var all = Promise<int>.All(LinqExts.FromItems<IPromise<int>>(promise1, promise2));
+			var all = Promise.All(new Promise<int>[] { promise1, promise2 });
 
 			all.Then(v => {
 				throw new ApplicationException("Shouldn't happen");
@@ -352,7 +319,7 @@ namespace CardinalTests {
 			var promise1 = new Promise<int>();
 			var promise2 = new Promise<int>();
 
-			var all = Promise<int>.All(LinqExts.FromItems<IPromise<int>>(promise1, promise2));
+			var all = Promise.All(new Promise<int>[] { promise1, promise2 });
 
 			all.Then(v => {
 				throw new ApplicationException("Shouldn't happen");
@@ -374,7 +341,7 @@ namespace CardinalTests {
 			var promise1 = new Promise<int>();
 			var promise2 = new Promise<int>();
 
-			var all = Promise<int>.All(LinqExts.FromItems<IPromise<int>>(promise1, promise2));
+			var all = Promise.All(new Promise<int>[] { promise1, promise2 });
 
 			all.Then(v => {
 				throw new ApplicationException("Shouldn't happen");
@@ -393,14 +360,14 @@ namespace CardinalTests {
 
 		[Fact]
 		public void combined_promise_is_resolved_if_there_are_no_promises() {
-			var all = Promise<int>.All(LinqExts.Empty<IPromise<int>>());
+			var all = Promise.All(new Promise<int>[0]);
 
 			var completed = 0;
 
-			all.Then(v => {
+			all.Then(results => {
 				++completed;
 
-				Assert.Empty(v);
+				Assert.Empty(results);
 			});
 
 			Assert.Equal(1, completed);
@@ -408,10 +375,10 @@ namespace CardinalTests {
 
 		[Fact]
 		public void combined_promise_is_resolved_when_all_promises_are_already_resolved() {
-			var promise1 = Promise<int>.Resolved(1);
-			var promise2 = Promise<int>.Resolved(1);
+			var promise1 = new Promise<int>(1);
+			var promise2 = new Promise<int>(1);
 
-			var all = Promise<int>.All(LinqExts.FromItems(promise1, promise2));
+			var all = Promise.All(new Promise<int>[] { promise1, promise2 });
 
 			var completed = 0;
 
@@ -424,15 +391,15 @@ namespace CardinalTests {
 			Assert.Equal(1, completed);
 		}
 
-		[Fact]
-		public void can_transform_promise_value() {
+		/* [Fact]
+		public void can_map_promise_value() {
 			var promise = new Promise<int>();
 
 			var promisedValue = 15;
 			var completed = 0;
 
 			promise
-				.Transform(v => v.ToString())
+				.Map(v => v.ToString())
 				.Then(v => {
 					Assert.Equal(promisedValue.ToString(), v);
 

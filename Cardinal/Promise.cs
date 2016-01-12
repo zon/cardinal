@@ -19,11 +19,13 @@ namespace Cardinal {
 				promise.Then(v => {
 					values[i] = v;
 					remaining--;
-					if (remaining < 1) {
+					if (remaining < 1)
 						result.Resolve(values);
-					}
 				});
-				promise.Catch(e => result.Reject(e));
+				promise.Catch(e => {
+					if (result.isPending)
+						result.Reject(e);
+				});
 			}
 			return result;
 		}
