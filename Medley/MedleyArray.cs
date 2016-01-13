@@ -52,6 +52,10 @@ namespace Medley {
 			return memo;
 		}
 
+		public static B Reduce<A, B>(this A[] arr, Func<B, A, B> iteratee) {
+			return Reduce(arr, iteratee, default(B));
+		}
+
 		public static T[] Filter<T>(this T[] arr, Func<T, bool> test) {
 			var result = new List<T>();
 			for (var i = 0; i < arr.Length; i++) {

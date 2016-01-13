@@ -60,6 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ReduceTest.cs" />
     <Compile Include="MapTest.cs" />
     <Compile Include="PromiseTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

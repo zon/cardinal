@@ -86,11 +86,12 @@ namespace Cardinal {
 			return Map(promises, (v, i) => mapper(v));
 		}
 
-		public static Promise<bool> Each<A, B>(A[] arr, Func<A, Promise<B>> iterator) {
-			return arr.Reduce<A, Promise<bool>>(
-				(last, v) => last.Next<bool>(ok => iterator(v).Map<bool>(b => ok)),
-				new Promise<bool>(true)
-			);
+		public static Promise<B> Reduce<A, B>(A[] arr, Func<B, A, Promise<B>> accumulator, B initial) {
+			return arr.Reduce((last, a) => last.Next(b => accumulator(b, a)), Resolve(initial));
+		}
+
+		public static Promise<B> Reduce<A, B>(A[] arr, Func<B, A, Promise<B>> accumulator) {
+			return Reduce(arr, accumulator, default(B));
 		}
 
 		public static Promise<Tuple<T1, T2>> Join<T1, T2>(Promise<T1> promise1, Promise<T2> promise2) {
