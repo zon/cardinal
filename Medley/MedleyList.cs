@@ -139,12 +139,16 @@ namespace Medley {
 			}
 		}
 
-		public static T Random<T>(this List<T> list) {
-			if (list.Count > 0) {
-				return list[UnityEngine.Random.Range(0, list.Count)];
+		public static T Random<T>(this List<T> arr, Random random) {
+			if (arr.Count > 0) {
+				return arr[random.Next(0, arr.Count)];
 			} else {
 				return default(T);
 			}
+		}
+
+		public static T Random<T>(this List<T> arr) {
+			return Random(arr, new Random());
 		}
 
 		public static bool Contains<T>(this List<T> list, Func<T, bool> test) {

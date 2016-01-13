@@ -118,18 +118,14 @@ namespace Medley {
 
 		public static T Random<T>(this T[] arr, Random random) {
 			if (arr.Length > 0) {
-				return arr[random.Range(0, arr.Length)];
+				return arr[random.Next(0, arr.Length)];
 			} else {
 				return default(T);
 			}
 		}
 
 		public static T Random<T>(this T[] arr) {
-			if (arr.Length > 0) {
-				return arr[UnityEngine.Random.Range(0, arr.Length)];
-			} else {
-				return default(T);
-			}
+			return Random(arr, new Random());
 		}
 
 		public static T First<T>(this T[] arr) {

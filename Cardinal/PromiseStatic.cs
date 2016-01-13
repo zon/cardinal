@@ -7,8 +7,16 @@ namespace Cardinal {
 
 		public static Action<Exception> onUnhandled;
 
-		public static Promise<T> Default<T>() {
-			return new Promise<T>(default(T));
+		public static Promise<T> Resolve<T>(T value) {
+			var promise = new Promise<T>();
+			promise.Resolve(value);
+			return promise;
+		}
+
+		public static Promise<T> Reject<T>(Exception reason) {
+			var promise = new Promise<T>();
+			promise.Reject(reason);
+			return promise;
 		}
 
 		public static Promise<T[]> All<T>(params Promise<T>[] promises) {
@@ -50,20 +58,32 @@ namespace Cardinal {
 			return result;
 		}
 
-		public static Promise<B[]> Map<A, B>(A[] arr, Func<A, Promise<B>> iterator) {
+		public static Promise<B[]> Map<A, B>(A[] arr, Func<A, int, Promise<B>> mapper) {
 			try {
-				return All(arr.Map(a => iterator(a)));
+				return All(arr.Map((a, i) => mapper(a, i)));
 			} catch (Exception ex) {
 				return new Promise<B[]>(ex);
 			}
 		}
 
-		public static Promise<B[]> Map<A, B>(A[] arr, Func<A, int, Promise<B>> iterator) {
-			try {
-				return All(arr.Map((a, i) => iterator(a, i)));
-			} catch (Exception ex) {
-				return new Promise<B[]>(ex);
-			}
+		public static Promise<B[]> Map<A, B>(A[] arr, Func<A, Promise<B>> mapper) {
+			return Map(arr, (v, i) => mapper(v));
+		}
+
+		public static Promise<B[]> Map<A, B>(Promise<A>[] promises, Func<A, int, B> mapper) {
+			return All(promises).Map(values => values.Map(mapper));
+		}
+
+		public static Promise<B[]> Map<A, B>(Promise<A>[] promises, Func<A, B> mapper) {
+			return Map(promises, (v, i) => mapper(v));
+		}
+
+		public static Promise<B[]> Map<A, B>(Promise<A>[] promises, Func<A, int, Promise<B>> mapper) {
+			return All(promises).Next(values => Map(values, mapper));
+		}
+
+		public static Promise<B[]> Map<A, B>(Promise<A>[] promises, Func<A, Promise<B>> mapper) {
+			return Map(promises, (v, i) => mapper(v));
 		}
 
 		public static Promise<bool> Each<A, B>(A[] arr, Func<A, Promise<B>> iterator) {

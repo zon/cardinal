@@ -773,10 +773,8 @@ namespace CardinalTests {
 			var expectedException = new Exception();
 
 			promise
-				.Next(value => {
+				.Next<int>(value => {
 					throw expectedException;
-
-					return new Promise<int>(10);
 				})
 				.Done(
 					value => {
