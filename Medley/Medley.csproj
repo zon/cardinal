@@ -4,15 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D0913D50-E74F-4548-993A-6501E1BE8446}</ProjectGuid>
+    <ProjectGuid>{05FDCE5C-3BFC-432B-A939-BF0E522482FB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cardinal</RootNamespace>
-    <AssemblyName>Cardinal</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>Medley</RootNamespace>
+    <AssemblyName>Medley</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,15 +38,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PromiseGeneric.cs" />
-    <Compile Include="PromiseStatic.cs" />
+    <Compile Include="MedleyArray.cs" />
+    <Compile Include="MedleyDictionary.cs" />
+    <Compile Include="MedleyList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Medley\Medley.csproj">
-      <Project>{05fdce5c-3bfc-432b-a939-bf0e522482fb}</Project>
-      <Name>Medley</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

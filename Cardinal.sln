@@ -4,11 +4,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cardinal", "Cardinal\Cardinal.csproj", "{D0913D50-E74F-4548-993A-6501E1BE8446}"
+	ProjectSection(ProjectDependencies) = postProject
+		{05FDCE5C-3BFC-432B-A939-BF0E522482FB} = {05FDCE5C-3BFC-432B-A939-BF0E522482FB}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardinalTests", "Cardinal.Tests\CardinalTests.csproj", "{B2837C0C-7EDC-4B70-A472-AAA5EEAE4F17}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D0913D50-E74F-4548-993A-6501E1BE8446} = {D0913D50-E74F-4548-993A-6501E1BE8446}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medley", "Medley\Medley.csproj", "{05FDCE5C-3BFC-432B-A939-BF0E522482FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +29,10 @@ Global
 		{B2837C0C-7EDC-4B70-A472-AAA5EEAE4F17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2837C0C-7EDC-4B70-A472-AAA5EEAE4F17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2837C0C-7EDC-4B70-A472-AAA5EEAE4F17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05FDCE5C-3BFC-432B-A939-BF0E522482FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05FDCE5C-3BFC-432B-A939-BF0E522482FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05FDCE5C-3BFC-432B-A939-BF0E522482FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05FDCE5C-3BFC-432B-A939-BF0E522482FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
