@@ -732,10 +732,7 @@ namespace CardinalTests {
 			Assert.Equal(1, callback);
 			Assert.Equal(0, errorCallback);
 		}
-
-		/*todo:
-         * Also want a test that exception thrown during Then triggers the error handler.
-         * How do Javascript promises work in this regard?
+		
         [Fact]
         public void exception_during_Done_onResolved_triggers_error_hander()
         {
@@ -767,9 +764,8 @@ namespace CardinalTests {
             Assert.Equal(1, callback);
             Assert.Equal(1, errorCallback);
         }
-         * */
 
-		/* [Fact]
+		[Fact]
 		public void exception_during_Then_onResolved_triggers_error_hander() {
 			var promise = new Promise<int>();
 			var callback = 0;
@@ -777,10 +773,10 @@ namespace CardinalTests {
 			var expectedException = new Exception();
 
 			promise
-				.Then(value => {
+				.Next(value => {
 					throw expectedException;
 
-					return Promise<int>.Resolved(10);
+					return new Promise<int>(10);
 				})
 				.Done(
 					value => {
@@ -797,7 +793,7 @@ namespace CardinalTests {
 
 			Assert.Equal(0, callback);
 			Assert.Equal(1, errorCallback);
-		} */
+		}
 
 	}
 
