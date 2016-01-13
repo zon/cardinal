@@ -5,9 +5,13 @@ namespace Cardinal {
 
 	public static class Promise {
 
-		public static Action<Exception> onException;
+		public static Action<Exception> onUnhandled;
 
-		public static Promise<T[]> All<T>(Promise<T>[] promises) {
+		public static Promise<T> Default<T>() {
+			return new Promise<T>(default(T));
+		}
+
+		public static Promise<T[]> All<T>(params Promise<T>[] promises) {
 			if (promises.Length < 1)
 				return new Promise<T[]>(new T[0]);
 			var result = new Promise<T[]>();
@@ -21,6 +25,22 @@ namespace Cardinal {
 					remaining--;
 					if (remaining < 1)
 						result.Resolve(values);
+				});
+				promise.Catch(e => {
+					if (result.isPending)
+						result.Reject(e);
+				});
+			}
+			return result;
+		}
+
+		public static Promise<T> Race<T>(params Promise<T>[] promises) {
+			var result = new Promise<T>();
+			for (var p = 0; p < promises.Length; p++) {
+				var promise = promises[p];
+				promise.Then(v => {
+					if (result.isPending)
+						result.Resolve(v);
 				});
 				promise.Catch(e => {
 					if (result.isPending)
@@ -75,6 +95,14 @@ namespace Cardinal {
 
 		public Promise(Exception reason) {
 			Reject(reason);
+		}
+
+		public Promise(Action<Action<A>, Action<Exception>> complete) {
+			try {
+				complete(v => Resolve(v), e => Reject(e));
+			} catch (Exception e) {
+				Reject(e);
+			}
 		}
 
 		public void Resolve(Promise<A> promise) {
@@ -135,7 +163,7 @@ namespace Cardinal {
 			return promise;
 		}
 
-		public Promise<B> Then<B>(Func<A, Promise<B>> onFulfilled) {
+		public Promise<B> Next<B>(Func<A, Promise<B>> onFulfilled) {
 			var promise = new Promise<B>();
 			resolutions += value => {
 				try {
@@ -163,22 +191,25 @@ namespace Cardinal {
 			return promise;
 		}
 
-		public void Done() {
-			if (Promise.onException != null)
-				rejections += Promise.onException;
-			Resolve(true);
-		}
-
-		public void Done(Action<A> onFulfilled) {
+		public void Done(Action<A> onResolved, Action<Exception> onRejected) {
 			resolutions += value => {
 				try {
-					onFulfilled(value);
-				} catch (Exception e) {
-					if (Promise.onException != null)
-						Promise.onException(e);
+					onResolved(value);
+				} catch (Exception exp) {
+					onRejected(exp);
 				}
 			};
-			Done();
+			rejections += onRejected;
+			Resolve();
+		}
+
+		public void Done(Action<A> onResolved) {
+			var onRejected = Promise.onUnhandled != null ? Promise.onUnhandled : e => { };
+			Done(onResolved, onRejected);
+		}
+
+		public void Done() {
+			Done(v => { });
 		}
 
 		public Promise<A> Catch(Action<Exception> onRejected) {
@@ -284,15 +315,13 @@ namespace Cardinal {
 			return string.Format("Promise<{0}>: state={1}, value={2}, reason={3}", typeof(A), state, value, reason);
 		}
 
-		void Resolve(bool done = false) {
+		void Resolve() {
 			if (state == State.Fulfilled) {
 				if (resolutions != null)
 					resolutions(value);
 			} else if (state == State.Rejected) {
 				if (rejections != null)
 					rejections(reason);
-				else if (done && Promise.onException != null)
-					Promise.onException(reason);
 			}
 			if (state != State.Pending) {
 				resolutions = null;

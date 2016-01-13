@@ -464,7 +464,7 @@ namespace CardinalTests {
 			var completed = 0;
 
 			promise
-				.Then(v => chainedPromise)
+				.Next(v => chainedPromise)
 				.Then(v => {
 					Assert.Equal(chainedPromiseValue, v);
 
@@ -486,7 +486,7 @@ namespace CardinalTests {
 			var errors = 0;
 
 			promise
-				.Then<string>(v => {
+				.Next<string>(v => {
 					throw ex;
 				})
 				.Catch(e => {
@@ -509,7 +509,7 @@ namespace CardinalTests {
 			var errors = 0;
 
 			promise
-				.Then(v => chainedPromise)
+				.Next(v => chainedPromise)
 				.Catch(e => {
 					Assert.Equal(ex, e);
 
@@ -521,14 +521,14 @@ namespace CardinalTests {
 			Assert.Equal(1, errors);
 		}
 
-		/* [Fact]
+		[Fact]
 		public void race_is_resolved_when_first_promise_is_resolved_first() {
 			var promise1 = new Promise<int>();
 			var promise2 = new Promise<int>();
 
 			var resolved = 0;
 
-			Promise<int>
+			Promise
 				.Race(promise1, promise2)
 				.Then(i => resolved = i);
 
@@ -544,7 +544,7 @@ namespace CardinalTests {
 
 			var resolved = 0;
 
-			Promise<int>
+			Promise
 				.Race(promise1, promise2)
 				.Then(i => resolved = i);
 
@@ -560,7 +560,7 @@ namespace CardinalTests {
 
 			Exception ex = null;
 
-			Promise<int>
+			Promise
 				.Race(promise1, promise2)
 				.Catch(e => ex = e);
 
@@ -577,7 +577,7 @@ namespace CardinalTests {
 
 			Exception ex = null;
 
-			Promise<int>
+			Promise
 				.Race(promise1, promise2)
 				.Catch(e => ex = e);
 
@@ -640,13 +640,13 @@ namespace CardinalTests {
 			var ex = new Exception();
 			var eventRaised = 0;
 
-			EventHandler<ExceptionEventArgs> handler = (s, e) => {
-				Assert.Equal(ex, e.Exception);
+			Action<Exception> handler = e => {
+				Assert.Equal(ex, e);
 
 				++eventRaised;
 			};
 
-			Promise.UnhandledException += handler;
+			Promise.onUnhandled += handler;
 
 			try {
 				promise
@@ -659,7 +659,7 @@ namespace CardinalTests {
 
 				Assert.Equal(1, eventRaised);
 			} finally {
-				Promise.UnhandledException -= handler;
+				Promise.onUnhandled -= handler;
 			}
 		}
 
@@ -667,27 +667,27 @@ namespace CardinalTests {
 		public void handled_exception_is_not_propagated_via_event() {
 			var promise = new Promise<int>();
 			var ex = new Exception();
+			var eventCaught = 0;
 			var eventRaised = 0;
 
-			EventHandler<ExceptionEventArgs> handler = (s, e) => ++eventRaised;
+			Action<Exception> handler = e => ++eventRaised;
 
-			Promise.UnhandledException += handler;
+			Promise.onUnhandled += handler;
 
 			try {
 				promise
 					.Then(a => {
 						throw ex;
 					})
-					.Catch(_ => {
-						// Catch the error.
-					})
+					.Catch(_ => ++eventCaught)
 					.Done();
 
 				promise.Resolve(5);
 
-				Assert.Equal(1, eventRaised);
+				Assert.Equal(1, eventCaught);
+				Assert.Equal(0, eventRaised);
 			} finally {
-				Promise.UnhandledException -= handler;
+				Promise.onUnhandled -= handler;
 			}
 
 		}
@@ -731,7 +731,7 @@ namespace CardinalTests {
 
 			Assert.Equal(1, callback);
 			Assert.Equal(0, errorCallback);
-		} */
+		}
 
 		/*todo:
          * Also want a test that exception thrown during Then triggers the error handler.
